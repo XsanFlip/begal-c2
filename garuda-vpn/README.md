@@ -62,6 +62,9 @@ const XOR_KEY = "FLIPPER_SECURE_XOR_KEY_1337"; // Must match C2
 *   The extension will automatically generate a unique `botUUID` for the target machine.
 *   Check your B.E.G.A.L Dashboard; the browser should now appear in the **"Active Bots"** list.
 
+### 5. Stealth
+*   To make Garuda-VPN better, don't forget to obfuscate each .js file.
+
 ---
 
 ## 🔒 Security Measures
