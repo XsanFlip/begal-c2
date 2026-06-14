@@ -2,6 +2,9 @@
 
 **B.E.G.A.L** (*Backdoor Exfiltration Gateway for Advanced Looting*) is an interactive, web-based Command and Control (C2) panel built with Python (Flask & Socket.IO). This platform is specifically designed to facilitate cybersecurity research, Red Teaming simulations, and educational purposes to understand how modern malware/botnets operate in exfiltrating data and controlling targets (bots) remotely.
 
+<img width="662" height="642" alt="Screenshot From 2026-06-14 21-39-44" src="https://github.com/user-attachments/assets/a39950e2-44ec-4ff3-824c-d3881fdb93aa" />
+
+
 ---
 
 ## ⚠️ LEGAL WARNING & DISCLAIMER (VERY IMPORTANT)
@@ -28,6 +31,8 @@ Only use this tool on systems you own or on systems where you have obtained **wr
     *   `Trigger Mic` (Record target's audio)
 5.  **Exfiltration Gateway**: A drag-and-drop upload interface designed to smuggle local files out via a Secure Telegram Tunnel.
 6.  **Persistent Storage & Reporting**: Secure data storage into per-target-session SQLite databases, which are then summarized in a dedicated reporting feature (URL: `/report`).
+
+<img width="1158" height="641" alt="Screenshot From 2026-06-14 21-40-13" src="https://github.com/user-attachments/assets/45c7cb67-fd09-4ac1-aa14-652ea37fdfb1" />
 
 ---
 
